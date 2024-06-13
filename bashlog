@@ -1,0 +1,79 @@
+BASHLOG_STDOUT=1
+BASHLOG_LOGFILE=""
+BASHLOG_DATE_FORMAT="%x %T"
+BASHLOG_LOG_LEVEL="info"
+
+function bashlog_cc()
+{
+    color=$1
+    case $color in
+            green) echo -ne "\033[32m" ;;
+            red) echo -ne "\033[31m" ;;
+            yellow) echo -ne "\033[33m" ;;
+            blue) echo -ne "\033[34m" ;;
+            magenta) echo -ne "\033[35m" ;;
+            cyan) echo -ne "\033[36m" ;;
+            *) echo -ne "\033[0m" ;;
+    esac
+}
+
+function bashlog_loglevel_map()
+{
+    lower_lev="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+    case "$lower_lev" in
+        debug) echo 0 ;; 
+        info) echo 1 ;;
+        warn) echo 2 ;;
+        error) echo 3 ;;
+        *) return ;;
+    esac
+}
+
+function bashlog()
+{
+    level="$(echo "$1" | tr '[:upper:]' '[:lower:]')"
+    msg="$2"
+
+    # return if not a valid level
+    if [ -z $(bashlog_loglevel_map "$level") ] || [ -z $(bashlog_loglevel_map "$BASHLOG_LOG_LEVEL") ]; then
+        return
+    fi
+
+    level_string=""
+    case "$level" in
+        debug)
+            level_string="[DEBUG]"
+            level_string_color="$(bashlog_cc green)${level_string}$(bashlog_cc)"
+            ;;        
+        info)
+            level_string="[INFO]"
+            level_string_color="$(bashlog_cc cyan)${level_string}$(bashlog_cc)"
+            ;;
+        warn)
+            level_string="[WARN]"
+            level_string_color="$(bashlog_cc yellow)${level_string}$(bashlog_cc)"
+            ;;
+        error)
+            level_string="[ERROR]"
+            level_string_color="$(bashlog_cc red)${level_string}$(bashlog_cc)"
+            ;;
+        *)
+            return
+            ;;
+    esac
+
+    if [ $(bashlog_loglevel_map "$level") -ge $(bashlog_loglevel_map "$BASHLOG_LOG_LEVEL") ]; then
+        date=""
+        if [ ! -z "$BASHLOG_DATE_FORMAT" ]; then
+            date="$(date "+${BASHLOG_DATE_FORMAT}") "
+        fi
+
+        if [ "$BASHLOG_STDOUT" -gt 0 ]; then
+            echo "${date}${level_string_color} - ${msg}"
+        fi
+
+        if [ ! -z "$BASHLOG_LOGFILE" ]; then
+            echo "${date}${level_string} - ${msg}" >> "$BASHLOG_LOGFILE"
+        fi
+    fi
+}
