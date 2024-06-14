@@ -7,13 +7,13 @@ function bashlog_cc()
 {
     color=$1
     case $color in
-            green) echo -ne "\033[32m" ;;
-            red) echo -ne "\033[31m" ;;
-            yellow) echo -ne "\033[33m" ;;
-            blue) echo -ne "\033[34m" ;;
-            magenta) echo -ne "\033[35m" ;;
-            cyan) echo -ne "\033[36m" ;;
-            *) echo -ne "\033[0m" ;;
+        green) echo -ne "\033[32m" ;;
+        red) echo -ne "\033[31m" ;;
+        yellow) echo -ne "\033[33m" ;;
+        blue) echo -ne "\033[34m" ;;
+        magenta) echo -ne "\033[35m" ;;
+        cyan) echo -ne "\033[36m" ;;
+        *) echo -ne "\033[0m" ;;
     esac
 }
 
