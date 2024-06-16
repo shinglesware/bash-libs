@@ -1,7 +1,8 @@
-BASHLOG_STDOUT=1
-BASHLOG_LOGFILE=""
-BASHLOG_DATE_FORMAT="%x %T"
-BASHLOG_LOG_LEVEL="info"
+BASHLOG_STDOUT=${BASHLOG_STDOUT:-"1"}
+BASHLOG_DISABLE_COLOR=${BASHLOG_DISABLE_COLOR:-"0"}
+BASHLOG_LOGFILE=${BASHLOG_LOGFILE:-""}
+BASHLOG_DATE_FORMAT=${BASHLOG_LOGFILE:-"%x %T"}
+BASHLOG_LOG_LEVEL=${BASHLOG_LOG_LEVEL:-"info"}
 
 function bashlog_cc()
 {
@@ -68,12 +69,19 @@ function bashlog()
             date="$(date "+${BASHLOG_DATE_FORMAT}") "
         fi
 
+        str_color="${date}${level_string_color} - ${msg}"
+        str_nocolor="${date}${level_string} - ${msg}"
+
         if [ "$BASHLOG_STDOUT" -gt 0 ]; then
-            echo "${date}${level_string_color} - ${msg}"
+            if [ "$BASHLOG_DISABLE_COLOR" -gt 0 ]; then
+                echo "$str_nocolor"
+            else
+                echo "$str_color"
+            fi
         fi
 
         if [ ! -z "$BASHLOG_LOGFILE" ]; then
-            echo "${date}${level_string} - ${msg}" >> "$BASHLOG_LOGFILE"
+            echo "$str_nocolor" >> "$BASHLOG_LOGFILE"
         fi
     fi
 }
